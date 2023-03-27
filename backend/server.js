@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/userRoutes");
+const rideRoutes = require("./routes/rideRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
 //we used app.use instead of app.get/post etc
 //now we abstract out the logic for the specified route in a seperate file called "userRoutes"
 app.use("/api/user", userRoutes);
+app.use("/api/ride", rideRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

@@ -11,6 +11,7 @@ import {
   import { useToast } from "@chakra-ui/react";
   import axios from "axios";
 //   import { useHistory } from "react-router-dom";
+  import { useNavigate } from "react-router-dom";
   
   const Signup = () => {
     const [show, setShow] = useState(false);
@@ -23,6 +24,7 @@ import {
     const [loading, setLoading] = useState(false);
     const toast = useToast();
     // const history = useHistory();
+    const navigate = useNavigate()
   
     const handleClick = () => setShow(!show);
     // const postDetails = (pics) => {
@@ -105,6 +107,7 @@ import {
         localStorage.setItem("userInfo", JSON.stringify(data));
         setLoading(false);
         // history.push("/chats");
+        navigate('/book')
       } catch (error) {
         toast({
           title: "Error occured",

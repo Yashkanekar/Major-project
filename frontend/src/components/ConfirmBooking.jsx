@@ -7,12 +7,25 @@ import * as turf from "@turf/turf"
 import {ethers} from 'ethers'
 import SendFunds from '../../../build/contracts/SendFunds.json'
 import Web3 from "web3";
+import { userState } from '../contexts/userContext';
+import { useToast } from "@chakra-ui/react";
+import { useNavigate } from 'react-router-dom';
 
 const ConfirmBooking = () => {
   const [source, setSource] = useState("");
   const [destination, setDestination] = useState("");
   const [distance, setDistance] = useState(null);
   const [amount, setAmount] = useState("0")
+  const navigate = useNavigate()
+  const toast = useToast()
+  const user = userState().user
+  if(!user){
+    navigate("/")
+  }
+  const {name,email,walletAddress} = user
+  // const {email,name,walletAddress} = user
+  
+
 
   const handleSend = async () => {
     // try {
@@ -44,8 +57,49 @@ const ConfirmBooking = () => {
 
     // await web3.eth.personal.unlockAccount(account, "password", 600);
     const weiAmount = web3.utils.toWei(String(amount), "ether");
-    await contract.methods.sendTo("0x68F02E914aED556AB4Db7322021fBA7ED322AFE5").send({ value: weiAmount, from:"0x96b71159C16f949628D5Ff46FC6cA28392F105eA" });
+    await contract.methods.sendTo("0x68F02E914aED556AB4Db7322021fBA7ED322AFE5").send({ value: weiAmount, from:walletAddress });
+
+    try {
+      const config = {
+        headers: {
+          "Content-type": "application/json",
+        },
+      };
+
+      const { data } = await axios.post(
+        "http://127.0.0.1:5000/api/ride/newride",
+        { email, name, source,destination,rideFair:amount },
+        config
+      );
+      // console.log(data);
+
+      toast({
+        title: "Payment is successful and ride created!",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      // localStorage.setItem("userInfo", JSON.stringify(data));
+      // setLoading(false);
+
+      // history.push("/chats");
+      // navigate('/book')
+      
+    } catch (error) {
+      toast({
+        title: "Error occured",
+        description: error.response.data.message,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      // setLoading(false);
+    }
   };
+
+  
 
   const fetchData = async (place) => {
     const response = await axios.get(
@@ -73,7 +127,11 @@ const ConfirmBooking = () => {
     console.log(distance);
     setAmount((Math.round((distance + Number.EPSILON) * 100) / 100)*2);
 
-  };
+    
+
+  }
+
+  
 
   return (
     <Box p={4} >

@@ -10,6 +10,7 @@ import {
   import { useState } from "react";
   import { useToast } from "@chakra-ui/react";
 //   import { useHistory } from "react-router-dom";
+import {useNavigate} from "react-router-dom"
   import axios from "axios";
   
   const Login = () => {
@@ -20,6 +21,7 @@ import {
     const [loading, setLoading] = useState(false);
     const toast = useToast();
     // const history = useHistory()
+    const navigate = useNavigate();
 
     const getWalletAddress = async () => {
       // Check if user has a wallet installed
@@ -78,7 +80,10 @@ import {
         });
         localStorage.setItem("userInfo", JSON.stringify(data));
         setLoading(false);
+
         // history.push("/chats");
+        navigate('/book')
+        
       } catch (error) {
         toast({
           title: "Error occured",
